@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,19 +72,22 @@ public class OutterHomePageFragment extends Fragment {
                 Toast.makeText(getActivity(),"linerLayoutW-->"+linerLayoutW,Toast.LENGTH_SHORT).show();
                 offset = (linerLayoutW/3-ivWide)/2;// 获取图片偏移量
                 Toast.makeText(getActivity(),"offset"+offset,Toast.LENGTH_SHORT).show();
-                //设定imageView的初始位置
 
-//                下面是网上写的设置初始位置的代码
-//                Matrix matrix = new Matrix();
-//                matrix.postTranslate(offset, 0);
-//                cursorImageView.setImageMatrix(matrix);
+                /*cursor的初始位置设定：
+                思路 屏幕总宽减去LinerLayout宽度再除以2在加上offset就得到初始位置
+                 */
+                DisplayMetrics dm = new DisplayMetrics();
+                getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+                int screenW = dm.widthPixels; // 获取手机屏幕宽度分辨率
+                int initX = (screenW-linerLayoutW)/2+offset;
+                //计算出初始位置后，设置控件的位置
+                LinearLayout.MarginLayoutParams margin=new LinearLayout.MarginLayoutParams(cursorImageView.getLayoutParams());
+                margin.setMargins(initX,margin.topMargin, margin.rightMargin, margin.bottomMargin);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(margin);
+                cursorImageView.setLayoutParams(params);
             }
         });
-//        DisplayMetrics dm = new DisplayMetrics();
-//        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-//        int screenW = dm.widthPixels; // 获取手机屏幕宽度分辨率
-//        offset = (screenW / 3 - ivWide) / 2; // 获取图片偏移量
-        // imageview设置平移，使下划线平移到初始位置（平移一个offset）
+
     }
     private void viewPagerAddFragment() {
         fragments = new ArrayList<Fragment>();
@@ -120,10 +124,11 @@ public class OutterHomePageFragment extends Fragment {
         }
     }
 
-    // 当页面滑动时，开始动画并跳出Toast
     public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
-
-        private int one = offset * 2 + ivWide ; // 页面1到页面2的偏移量
+/*  计算出标签的偏移量
+     标签偏移量大小为offset * 2 + ivWide
+ */
+        private int one = offset * 2 + ivWide ;
 
         @Override
         public void onPageScrollStateChanged(int arg0) {
