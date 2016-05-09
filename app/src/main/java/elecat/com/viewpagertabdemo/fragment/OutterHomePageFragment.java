@@ -15,7 +15,7 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +25,22 @@ import elecat.com.viewpagertabdemo.R;
 /**
  * Created by liangminhua on 16/5/7.
  */
-public class OutterHomePageFragment extends Fragment {
+public class OutterHomePageFragment extends Fragment implements View.OnClickListener {
     ViewPager innerViewPager;
     View view;
     List<Fragment> fragments;
     Fragment bookFragment, novelFragment, cartoomFragment;
     ImageView cursorImageView;
-    //下标的偏移量
-    int offset;
-    int currIndex = 0;      // 当前页卡编号
+    int offset; //下标的偏移量
+    int currIndex = 0;// 当前页卡编号
     int ivWide;//下标宽度
     LinearLayout tagLinerLayout;
     int linerLayoutW;
     android.os.Handler handler = new android.os.Handler();
+    TextView bookTextView, novelTextView, cartoonTextView;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,  Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_homepage_outter, null);
         return view;
     }
@@ -48,30 +48,33 @@ public class OutterHomePageFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         findById();
-        //在这里有可能是得不到控件的宽度的，因为这里还没有可以得到数据
         initImageView();
         viewPagerAddFragment();
-        //让主线程代码延迟
+        //让主线程代码延迟s
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 innerViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
             }
-        },300);
+        }, 300);
+        setListener();
+    }
+
+    private void setListener() {
+        bookTextView.setOnClickListener(this);
+        novelTextView.setOnClickListener(this);
+        cartoonTextView.setOnClickListener(this);
     }
 
     private void initImageView() {
-        ViewTreeObserver vto= cursorImageView.getViewTreeObserver();
+        ViewTreeObserver vto = cursorImageView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 cursorImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 ivWide = cursorImageView.getWidth();
-                Toast.makeText(getActivity(),"ivWide-->"+ivWide,Toast.LENGTH_SHORT).show();
-                linerLayoutW =tagLinerLayout.getWidth();
-                Toast.makeText(getActivity(),"linerLayoutW-->"+linerLayoutW,Toast.LENGTH_SHORT).show();
-                offset = (linerLayoutW/3-ivWide)/2;// 获取图片偏移量
-                Toast.makeText(getActivity(),"offset"+offset,Toast.LENGTH_SHORT).show();
+                linerLayoutW = tagLinerLayout.getWidth();
+                offset = (linerLayoutW / 3 - ivWide) / 2;// 获取图片偏移量
 
                 /*cursor的初始位置设定：
                 思路 屏幕总宽减去LinerLayout宽度再除以2在加上offset就得到初始位置
@@ -79,16 +82,17 @@ public class OutterHomePageFragment extends Fragment {
                 DisplayMetrics dm = new DisplayMetrics();
                 getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
                 int screenW = dm.widthPixels; // 获取手机屏幕宽度分辨率
-                int initX = (screenW-linerLayoutW)/2+offset;
+                int initX = (screenW - linerLayoutW) / 2 + offset;
                 //计算出初始位置后，设置控件的位置
-                LinearLayout.MarginLayoutParams margin=new LinearLayout.MarginLayoutParams(cursorImageView.getLayoutParams());
-                margin.setMargins(initX,margin.topMargin, margin.rightMargin, margin.bottomMargin);
+                LinearLayout.MarginLayoutParams margin = new LinearLayout.MarginLayoutParams(cursorImageView.getLayoutParams());
+                margin.setMargins(initX, margin.topMargin, margin.rightMargin, margin.bottomMargin);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(margin);
                 cursorImageView.setLayoutParams(params);
             }
         });
 
     }
+
     private void viewPagerAddFragment() {
         fragments = new ArrayList<Fragment>();
         bookFragment = new InnerBookFragment();
@@ -99,12 +103,52 @@ public class OutterHomePageFragment extends Fragment {
         fragments.add(cartoomFragment);
         innerViewPager.setAdapter(new InnerPagerFragmentAdapter(getChildFragmentManager()));
         innerViewPager.setCurrentItem(0);
+        textViewChangeColor(0);
+    }
+
+    private void textViewChangeColor(int i) {
+        switch (i) {
+            case 0:
+                bookTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+                novelTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                cartoonTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                break;
+            case 1:
+                bookTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                novelTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+                cartoonTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                break;
+            case 2:
+                bookTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                novelTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                cartoonTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+                break;
+        }
     }
 
     private void findById() {
         innerViewPager = (ViewPager) view.findViewById(R.id.inner_viewPager);
         cursorImageView = (ImageView) view.findViewById(R.id.cursor_iv);
         tagLinerLayout = (LinearLayout) view.findViewById(R.id.tag_ll);
+        bookTextView = (TextView) view.findViewById(R.id.booksheft_tv);
+        novelTextView = (TextView) view.findViewById(R.id.novel_tv);
+        cartoonTextView = (TextView) view.findViewById(R.id.cartoon_tv);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.booksheft_tv:
+                innerViewPager.setCurrentItem(0);
+                break;
+            case R.id.novel_tv:
+                innerViewPager.setCurrentItem(1);
+                break;
+            case R.id.cartoon_tv:
+                innerViewPager.setCurrentItem(2);
+                break;
+        }
+
     }
 
     public class InnerPagerFragmentAdapter extends FragmentPagerAdapter {
@@ -125,10 +169,10 @@ public class OutterHomePageFragment extends Fragment {
     }
 
     public class MyOnPageChangeListener implements ViewPager.OnPageChangeListener {
-/*  计算出标签的偏移量
-     标签偏移量大小为offset * 2 + ivWide
- */
-        private int one = offset * 2 + ivWide ;
+        /*  计算出标签的偏移量
+             标签偏移量大小为offset * 2 + ivWide
+         */
+        private int one = offset * 2 + ivWide;
 
         @Override
         public void onPageScrollStateChanged(int arg0) {
@@ -152,6 +196,8 @@ public class OutterHomePageFragment extends Fragment {
             animation.setDuration(200); // 动画持续时间，0.2秒
             cursorImageView.startAnimation(animation); // 是用imageview来显示动画
             int i = currIndex + 1;
+            //改变textView的颜色
+            textViewChangeColor(arg0);
         }
     }
 }
