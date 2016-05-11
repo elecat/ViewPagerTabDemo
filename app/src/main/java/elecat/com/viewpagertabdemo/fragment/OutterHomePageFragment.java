@@ -1,7 +1,7 @@
 package elecat.com.viewpagertabdemo.fragment;
 
-import android.graphics.Matrix;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -20,35 +20,46 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import elecat.com.viewpagertabdemo.R;
 
 /**
  * Created by liangminhua on 16/5/7.
  */
 public class OutterHomePageFragment extends Fragment implements View.OnClickListener {
-    ViewPager innerViewPager;
     View view;
     List<Fragment> fragments;
     Fragment bookFragment, novelFragment, cartoomFragment;
-    ImageView cursorImageView;
     int offset; //下标的偏移量
     int currIndex = 0;// 当前页卡编号
     int ivWide;//下标宽度
-    LinearLayout tagLinerLayout;
     int linerLayoutW;
-    android.os.Handler handler = new android.os.Handler();
-    TextView bookTextView, novelTextView, cartoonTextView;
+    Handler handler = new Handler();
+    @BindView(R.id.booksheft_tv)
+    TextView booksheftTv;
+    @BindView(R.id.novel_tv)
+    TextView novelTv;
+    @BindView(R.id.cartoon_tv)
+    TextView cartoonTv;
+    @BindView(R.id.tag_ll)
+    LinearLayout tagLL;
+    @BindView(R.id.cursor_iv)
+    ImageView cursorIv;
+    @BindView(R.id.inner_viewPager)
+    ViewPager innerViewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_homepage_outter, null);
+        ButterKnife.bind(this, view);
+        setTitle();
+        initImageView();
         return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        findById();
-        initImageView();
         viewPagerAddFragment();
         //让主线程代码延迟s
         handler.postDelayed(new Runnable() {
@@ -56,24 +67,32 @@ public class OutterHomePageFragment extends Fragment implements View.OnClickList
             public void run() {
                 innerViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
             }
-        }, 300);
+        }, 100);
         setListener();
     }
 
+    private void setTitle() {
+        booksheftTv.setText("书籍");
+        cartoonTv.setText("漫画");
+        novelTv.setText("小说");
+    }
+
     private void setListener() {
-        bookTextView.setOnClickListener(this);
-        novelTextView.setOnClickListener(this);
-        cartoonTextView.setOnClickListener(this);
+        booksheftTv.setOnClickListener(this);
+        novelTv.setOnClickListener(this);
+        cartoonTv.setOnClickListener(this);
     }
 
     private void initImageView() {
-        ViewTreeObserver vto = cursorImageView.getViewTreeObserver();
+        ViewTreeObserver vto = cursorIv.getViewTreeObserver();
+        //这个回调接口使view的计算推迟到view被加载完毕
+
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                cursorImageView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                ivWide = cursorImageView.getWidth();
-                linerLayoutW = tagLinerLayout.getWidth();
+                cursorIv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                ivWide = cursorIv.getWidth();
+                linerLayoutW = tagLL.getWidth();
                 offset = (linerLayoutW / 3 - ivWide) / 2;// 获取图片偏移量
 
                 /*cursor的初始位置设定：
@@ -84,10 +103,10 @@ public class OutterHomePageFragment extends Fragment implements View.OnClickList
                 int screenW = dm.widthPixels; // 获取手机屏幕宽度分辨率
                 int initX = (screenW - linerLayoutW) / 2 + offset;
                 //计算出初始位置后，设置控件的位置
-                LinearLayout.MarginLayoutParams margin = new LinearLayout.MarginLayoutParams(cursorImageView.getLayoutParams());
+                LinearLayout.MarginLayoutParams margin = new LinearLayout.MarginLayoutParams(cursorIv.getLayoutParams());
                 margin.setMargins(initX, margin.topMargin, margin.rightMargin, margin.bottomMargin);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(margin);
-                cursorImageView.setLayoutParams(params);
+                cursorIv.setLayoutParams(params);
             }
         });
 
@@ -109,30 +128,21 @@ public class OutterHomePageFragment extends Fragment implements View.OnClickList
     private void textViewChangeColor(int i) {
         switch (i) {
             case 0:
-                bookTextView.setTextColor(getResources().getColor(R.color.colorAccent));
-                novelTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
-                cartoonTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                booksheftTv.setTextColor(getResources().getColor(R.color.colorAccent));
+                novelTv.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                cartoonTv.setTextColor(getResources().getColor(R.color.defaultTextColor));
                 break;
             case 1:
-                bookTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
-                novelTextView.setTextColor(getResources().getColor(R.color.colorAccent));
-                cartoonTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                booksheftTv.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                novelTv.setTextColor(getResources().getColor(R.color.colorAccent));
+                cartoonTv.setTextColor(getResources().getColor(R.color.defaultTextColor));
                 break;
             case 2:
-                bookTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
-                novelTextView.setTextColor(getResources().getColor(R.color.defaultTextColor));
-                cartoonTextView.setTextColor(getResources().getColor(R.color.colorAccent));
+                booksheftTv.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                novelTv.setTextColor(getResources().getColor(R.color.defaultTextColor));
+                cartoonTv.setTextColor(getResources().getColor(R.color.colorAccent));
                 break;
         }
-    }
-
-    private void findById() {
-        innerViewPager = (ViewPager) view.findViewById(R.id.inner_viewPager);
-        cursorImageView = (ImageView) view.findViewById(R.id.cursor_iv);
-        tagLinerLayout = (LinearLayout) view.findViewById(R.id.tag_ll);
-        bookTextView = (TextView) view.findViewById(R.id.booksheft_tv);
-        novelTextView = (TextView) view.findViewById(R.id.novel_tv);
-        cartoonTextView = (TextView) view.findViewById(R.id.cartoon_tv);
     }
 
     @Override
@@ -194,7 +204,7 @@ public class OutterHomePageFragment extends Fragment implements View.OnClickList
             currIndex = arg0;
             animation.setFillAfter(true); // 动画终止时停留在最后一帧，不然会回到没有执行前的状态
             animation.setDuration(200); // 动画持续时间，0.2秒
-            cursorImageView.startAnimation(animation); // 是用imageview来显示动画
+            cursorIv.startAnimation(animation); // 是用imageview来显示动画
             int i = currIndex + 1;
             //改变textView的颜色
             textViewChangeColor(arg0);

@@ -11,6 +11,8 @@ It is a ViewPager+Tab Demo
 关于控件获取高度，有三种方式。
 如何得到控件的高度，这里写了三个方法。比较了这三个方法哪个好。感谢文章作者。
 http://blog.csdn.net/johnny901114/article/details/7839512
+对比后，选择了第三种方法getViewTreeObserver().addOnGlobalLayoutListener()
+使用了视图树的状态改变监听。（视图树还有其他的回调接口，我们还可以监听视图树准备绘制OnPreDrawListener，视图树获得了焦点OnGlobalFocusChangeListener，监听视图树中一些组件发生滚动OnScrollChangedListener）
 
 2、在成功获取控件宽度后，可以计算出偏移量。监听viewPager的OnPageChange。当滑动的时候，改变下标位置。
 但是发现偏移量offset为0。
@@ -27,6 +29,8 @@ http://blog.csdn.net/tabactivity/article/details/9128271
 解决方法：adapter的构造方法里，要传过去getChildFragmentManager();
 
 5、关于cursor偏移量的计算，以及cursor初始位置的确定。请看代码说明和图片“P60509-145013.jpg”
+
+6、加入ButterKnife的使用，ButterKnife是流行的注入框架。
 
 在写的Demo过程中，参考的文章：
 http://lightman1024.lofter.com/post/1d2b14e6_7aa8fcd

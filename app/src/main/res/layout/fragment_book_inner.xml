@@ -5,10 +5,10 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/booksheft_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="200dp"
-        android:text="书架"
         android:textSize="30sp" />
 </LinearLayout>
