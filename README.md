@@ -30,7 +30,7 @@ http://blog.csdn.net/tabactivity/article/details/9128271
 
 5、关于cursor偏移量的计算，以及cursor初始位置的确定。请看代码说明和图片“P60509-145013.jpg”
 
-6、加入ButterKnife的使用，ButterKnife是流行的注入框架。
+6、加入ButterKnife的使用，ButterKnife是流行的注入框架。其实我们在使用ButterKnife外，还可以使用Android Studio针对ButterKnife的插件ButterKnife Zelezny。这个插件让我们在使用ButterKnife时，可以批量生成布局有id的控件的注入代码。这是一个相见恨晚的插件。详情请看https://github.com/avast/android-butterknife-zelezny
 
 在写的Demo过程中，参考的文章：
 http://lightman1024.lofter.com/post/1d2b14e6_7aa8fcd
